@@ -1,12 +1,9 @@
-import rclpy
+zimport rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float64MultiArray
 import numpy as np
 np.set_printoptions(precision=3, suppress=True)
-
-Kp = 15
-Kd = 0.1
 
 def rotation_x(angle):
     ################################################################################################
@@ -66,22 +63,22 @@ class InverseKinematics(Node):
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
-        ]) + np.array([0.07500, -0.1, 0])
+        ]) + np.array([0.06, -0.09, 0])
         lf_ee_triangle_positions = np.array([
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
-        ]) + np.array([0.07500, 0.1, 0])
+        ]) + np.array([0.06, 0.09, 0])
         rb_ee_triangle_positions = np.array([
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
-        ]) + np.array([-0.07500, -0.1, 0])
+        ]) + np.array([-0.11, -0.09, 0])
         lb_ee_triangle_positions = np.array([
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
-        ]) + np.array([-0.07500, 0.1, 0])
+        ]) + np.array([-0.11, 0.09, 0])
 
         self.ee_triangle_positions = [rf_ee_triangle_positions, lf_ee_triangle_positions, rb_ee_triangle_positions, lb_ee_triangle_positions]
         self.fk_functions = [self.fr_leg_fk, self.fl_leg_fk, self.br_leg_fk, self.lb_leg_fk]
@@ -91,7 +88,7 @@ class InverseKinematics(Node):
         print(f'shape of target_ee_cache: {self.target_ee_cache.shape}')
 
 
-        self.pd_timer_period = 1.0 / 500  # 200 Hz
+        self.pd_timer_period = 1.0 / 200  # 200 Hz
         self.ik_timer_period = 1.0 / 100   # 10 Hz
         self.pd_timer = self.create_timer(self.pd_timer_period, self.pd_timer_callback)
         self.ik_timer = self.create_timer(self.ik_timer_period, self.ik_timer_callback)
@@ -215,13 +212,9 @@ class InverseKinematics(Node):
                 Current Angles: {self.joint_positions}')
 
     def pd_timer_callback(self):
-        if self.joint_positions is not None and self.joint_velocities is not None and self.target_joint_positions is not None:
-            ################################################################################################
-            torques = None
-            # TODO: [already done] paste lab 1 pd controller here 
-            ################################################################################################
+        if self.target_joint_positions is not None:
             command_msg = Float64MultiArray()
-            command_msg.data = torques.tolist()
+            command_msg.data = self.target_joint_positions.tolist()
             self.command_publisher.publish(command_msg)
 
 def main():
