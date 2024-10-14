@@ -61,26 +61,30 @@ class InverseKinematics(Node):
         
         ## trotting
         # TODO: Implement each leg’s trajectory in the trotting gait.
+        rf_ee_offset = np.array([0.06, -0.09, 0])
         rf_ee_triangle_positions = np.array([
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
-        ]) + np.array([0.06, -0.09, 0])
+        ]) + rf_ee_offset
+        lf_ee_offset = np.array([0.06, 0.09, 0])
         lf_ee_triangle_positions = np.array([
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
-        ]) + np.array([0.06, 0.09, 0])
+        ]) + lf_ee_offset
+        rb_ee_offset = np.array([-0.11, -0.09, 0])
         rb_ee_triangle_positions = np.array([
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
-        ]) + np.array([-0.11, -0.09, 0])
+        ]) + rb_ee_offset
+        lb_ee_offset = np.array([-0.11, 0.09, 0])
         lb_ee_triangle_positions = np.array([
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
-        ]) + np.array([-0.11, 0.09, 0])
+        ]) + lb_ee_offset
 
 
         self.ee_triangle_positions = [rf_ee_triangle_positions, lf_ee_triangle_positions, rb_ee_triangle_positions, lb_ee_triangle_positions]
