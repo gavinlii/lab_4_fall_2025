@@ -51,14 +51,16 @@ class InverseKinematics(Node):
         self.target_joint_positions = None
         self.counter = 0
 
-        ################################################################################################
-        # TODO: Implement the trotting gait
-        # position_1 = ...
-        # position_2 = ...
-        # ...
-        ################################################################################################
-
+        # Trotting gate positions, already implemented
+        touch_down_position = np.array([0.05, 0.0, -0.14])
+        stand_position_1 = np.array([0.025, 0.0, -0.14])
+        stand_position_2 = np.array([0.0, 0.0, -0.14])
+        stand_position_3 = np.array([-0.025, 0.0, -0.14])
+        liftoff_position = np.array([-0.05, 0.0, -0.14])
+        mid_swing_position = np.array([0.0, 0.0, -0.05])
+        
         ## trotting
+        # TODO: Implement each leg’s trajectory in the trotting gait.
         rf_ee_triangle_positions = np.array([
             ################################################################################################
             # TODO: Implement the trotting gait
@@ -79,6 +81,7 @@ class InverseKinematics(Node):
             # TODO: Implement the trotting gait
             ################################################################################################
         ]) + np.array([-0.11, 0.09, 0])
+
 
         self.ee_triangle_positions = [rf_ee_triangle_positions, lf_ee_triangle_positions, rb_ee_triangle_positions, lb_ee_triangle_positions]
         self.fk_functions = [self.fr_leg_fk, self.fl_leg_fk, self.br_leg_fk, self.lb_leg_fk]
