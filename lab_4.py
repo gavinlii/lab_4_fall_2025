@@ -91,7 +91,7 @@ class InverseKinematics(Node):
 
 
         self.ee_triangle_positions = [rf_ee_triangle_positions, lf_ee_triangle_positions, rb_ee_triangle_positions, lb_ee_triangle_positions]
-        self.fk_functions = [self.fr_leg_fk, self.fl_leg_fk, self.br_leg_fk, self.lb_leg_fk]
+        self.fk_functions = [self.fr_leg_fk, self.fl_leg_fk, self.br_leg_fk, self.bl_leg_fk]
 
         self.target_joint_positions_cache, self.target_ee_cache = self.cache_target_joint_positions()
         print(f'shape of target_joint_positions_cache: {self.target_joint_positions_cache.shape}')
@@ -125,7 +125,7 @@ class InverseKinematics(Node):
         ################################################################################################
         return
 
-    def lb_leg_fk(self, theta):
+    def bl_leg_fk(self, theta):
         ################################################################################################
         # TODO: implement forward kinematics here
         ################################################################################################
