@@ -16,7 +16,7 @@
 from launch import LaunchDescription
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessExit
-from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
+from launch.substitutions import Command, FindExecutable, PathJoinSubstitution, ThisLaunchFileDir
 
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -30,11 +30,7 @@ def generate_launch_description():
             " ",
             PathJoinSubstitution(
                 [
-#                    FindPackageShare("control_board_hardware_interface"),
-                    # "/home/pi/ros2_ws/src/control_board_hardware_interface",
-                    # "test",
-                    # "test_state_publisher.urdf.xacro",
-                    "/home/pi/ros2_ws/src/pupper_v3_description",
+                    FindPackageShare("pupper_v3_description"),
                     "description",
                     "pupper_v3.urdf.xacro",
                 ]
@@ -45,8 +41,7 @@ def generate_launch_description():
 
     robot_controllers = PathJoinSubstitution(
         [
-#            FindPackageShare("control_board_hardware_interface"),
-            "/home/pi/lab_4",
+            ThisLaunchFileDir(),
             "lab_4.yaml",
         ]
     )
