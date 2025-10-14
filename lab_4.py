@@ -151,7 +151,7 @@ class InverseKinematics(Node):
         ################################################################################################
         # TODO: implement forward kinematics here
         ################################################################################################
-        T_RF_0_1 = translation(-0.07500, -0.08350, 0) @ rotation_x(-1.57080) @ rotation_z(theta[0])
+        T_RF_0_1 = translation(-0.07500, -0.08350, 0) @ rotation_x(1.57080) @ rotation_z(theta[0])
         T_RF_1_2 = rotation_y(-1.57080) @ rotation_z(theta[1])
         T_RF_2_3 = translation(0, -0.04940, 0.06850) @ rotation_y(1.57080) @ rotation_z(theta[2])
         T_RF_3_ee = translation(0.06231, -0.06216, 0.01800)
@@ -163,7 +163,7 @@ class InverseKinematics(Node):
         # TODO: implement forward kinematics here
         ################################################################################################
         theta1, theta2, theta3 = theta
-        T_0_1 = translation(0.07500, 0.0445, 0) @ rotation_x(1.57080) @ rotation_z(theta1)
+        T_0_1 = translation(-0.07500, 0.0445, 0) @ rotation_x(-1.57080) @ rotation_z(theta1)
         T_1_2 = translation(0, 0, 0.039) @ rotation_y(-1.57080) @ rotation_z(theta2)
         T_2_3 = translation(0, -0.0494, 0.0685) @ rotation_y(1.57080) @ rotation_z(theta3)
         T_3_ee = translation(0.06231, -0.06216, 0.018) 
@@ -233,7 +233,7 @@ class InverseKinematics(Node):
         # TODO: implement interpolation for all 4 legs here
         ################################################################################################
         v1, v2, v3, v4 = self.ee_triangle_positions[leg_index]
-        t_mod = t % 3 # loop every 3 sec        
+        t_mod = t % 4 # loop every 3 sec        
         if (t_mod < 1):
             pos = v2-v1 * t_mod + v1
         elif (t_mod < 2):
