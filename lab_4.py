@@ -86,7 +86,7 @@ class InverseKinematics(Node):
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
-            liftoff_position, mid_swing_position, touch_down_position, stand_position_2
+            touch_down_position, stand_position_2, liftoff_position, mid_swing_position
         ]) + rf_ee_offset
         
         lf_ee_offset = np.array([0.06, 0.09, 0])
@@ -102,7 +102,7 @@ class InverseKinematics(Node):
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
-            touch_down_position, stand_position_2, liftoff_position, mid_swing_position
+            liftoff_position, mid_swing_position, touch_down_position, stand_position_2
         ]) + rb_ee_offset
         
         lb_ee_offset = np.array([-0.11, 0.09, 0])
@@ -232,8 +232,18 @@ class InverseKinematics(Node):
         ################################################################################################
         # TODO: implement interpolation for all 4 legs here
         ################################################################################################
-        
-        return
+        v1, v2, v3, v4 = self.ee_triangle_positions[leg_index]
+        t_mod = t % 3 # loop every 3 sec        
+        if (t_mod < 1):
+            pos = v2-v1 * t_mod + v1
+        elif (t_mod < 2):
+            pos = v3-v2 * t_mod + v2
+        elif (t_mod < 3):
+            pos = v4-v3 * t_mod + v3
+        else:
+            pos = v1-v4 * t_mod + v4
+    
+        return np.array(pos)
 
     def cache_target_joint_positions(self):
         # Calculate and store the target joint positions for a cycle and all 4 legs
