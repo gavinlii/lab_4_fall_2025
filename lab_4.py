@@ -118,8 +118,7 @@ class InverseKinematics(Node):
         self.fk_functions = [self.fr_leg_fk, self.fl_leg_fk, self.br_leg_fk, self.bl_leg_fk]
 
         self.target_joint_positions_cache, self.target_ee_cache = self.cache_target_joint_positions()
-        print(f'shape of target_joint_positions_cache: {self.target_joint_positions_cache.shape}')
-        print(f'shape of target_ee_cache: {self.target_ee_cache.shape}')
+
 
 
         self.pd_timer_period = 1.0 / 200  # 200 Hz
@@ -140,10 +139,10 @@ class InverseKinematics(Node):
     def fl_leg_fk(self, theta):
         # T_0_1 (base_link to leg_front_l_1)
         theta1, theta2, theta3 = theta
-        T_0_1 = translation(0.07500, -0.0445, 0) @ rotation_x(1.57080) @ rotation_z(theta1)
-        T_1_2 = translation(0, 0, 0.039) @ rotation_y(-1.57080) @ rotation_z(theta2)
-        T_2_3 = translation(0, -0.0494, 0.0685) @ rotation_y(1.57080) @ rotation_z(theta3)
-        T_3_ee = translation(0.06231, -0.06216, 0.018) 
+        T_0_1 = translation(0.07500, 0.08350, 0) @ rotation_x(1.57080) @ rotation_z(-theta[0])
+        T_1_2 = rotation_y(-1.57080) @ rotation_z(theta[1])
+        T_2_3 = translation(0, -0.0494, 0.0685) @ rotation_y(1.57080) @ rotation_z(-theta[2])
+        T_3_ee = translation(0.06231, -0.06216, -0.018) 
         T_0_ee = T_0_1 @ T_1_2 @ T_2_3 @ T_3_ee
         return T_0_ee[:3,3]
 
@@ -151,7 +150,7 @@ class InverseKinematics(Node):
         ################################################################################################
         # TODO: implement forward kinematics here
         ################################################################################################
-        T_RF_0_1 = translation(-0.07500, -0.08350, 0) @ rotation_x(-1.57080) @ rotation_z(theta[0])
+        T_RF_0_1 = translation(-0.07500, -0.07250, 0) @ rotation_x(1.57080) @ rotation_z(theta[0])
         T_RF_1_2 = rotation_y(-1.57080) @ rotation_z(theta[1])
         T_RF_2_3 = translation(0, -0.04940, 0.06850) @ rotation_y(1.57080) @ rotation_z(theta[2])
         T_RF_3_ee = translation(0.06231, -0.06216, 0.01800)
@@ -163,10 +162,10 @@ class InverseKinematics(Node):
         # TODO: implement forward kinematics here
         ################################################################################################
         theta1, theta2, theta3 = theta
-        T_0_1 = translation(0.07500, 0.0445, 0) @ rotation_x(1.57080) @ rotation_z(theta1)
-        T_1_2 = translation(0, 0, 0.039) @ rotation_y(-1.57080) @ rotation_z(theta2)
-        T_2_3 = translation(0, -0.0494, 0.0685) @ rotation_y(1.57080) @ rotation_z(theta3)
-        T_3_ee = translation(0.06231, -0.06216, 0.018) 
+        T_0_1 = translation(-0.07500, 0.0725, 0) @ rotation_x(1.57080) @ rotation_z(-theta[0])
+        T_1_2 = rotation_y(-1.57080) @ rotation_z(theta[1])
+        T_2_3 = translation(0, -0.0494, 0.0685) @ rotation_y(1.57080) @ rotation_z(-theta[2])
+        T_3_ee = translation(0.06231, -0.06216, -0.018) 
         T_0_ee = T_0_1 @ T_1_2 @ T_2_3 @ T_3_ee
         return T_0_ee[:3,3]
 
@@ -192,7 +191,8 @@ class InverseKinematics(Node):
             # TODO: [already done] paste lab 3 inverse kinematics here
             ################################################################################################
             cost = np.linalg.norm(target_ee-current_position)
-            return cost **2
+            l1 = np.abs(target_ee - current_position)
+            return cost **2, l1
 
         def gradient(theta, epsilon=1e-3):
             grad = np.zeros(3)
@@ -205,8 +205,8 @@ class InverseKinematics(Node):
                 theta_plus[i] += epsilon
                 theta_minus[i] -= epsilon
 
-                cost_plus = cost_function(theta_plus)
-                cost_minus = cost_function(theta_minus)
+                cost_plus, _ = cost_function(theta_plus)
+                cost_minus, _ = cost_function(theta_minus)
 
                 grad[i] = (cost_plus - cost_minus) / (2 * epsilon)
             return grad
@@ -222,7 +222,8 @@ class InverseKinematics(Node):
             # TODO: [already done] paste lab 3 inverse kinematics here
             ################################################################################################
             grad = gradient(theta)
-            if np.sum(np.abs(target_ee-theta)) < tolerance:
+            cost, l1 = cost_function(theta)
+            if np.mean(l1) < tolerance:
                 break
             theta = theta - learning_rate * grad
 
@@ -233,15 +234,15 @@ class InverseKinematics(Node):
         # TODO: implement interpolation for all 4 legs here
         ################################################################################################
         v1, v2, v3, v4 = self.ee_triangle_positions[leg_index]
-        t_mod = t % 3 # loop every 3 sec        
-        if (t_mod < 1):
-            pos = v2-v1 * t_mod + v1
-        elif (t_mod < 2):
-            pos = v3-v2 * t_mod + v2
-        elif (t_mod < 3):
-            pos = v4-v3 * t_mod + v3
+        t_mod = t # loop every RR sec        
+        if (t_mod < 5/24):
+            pos = (v2-v1)* t_mod + v1
+        elif (t_mod < 10/24):
+            pos = (v3-v2)* (t_mod -1/6) + v2
+        elif (t_mod < 15/24):
+            pos = (v4-v3) * (t_mod - 1/3) + v3
         else:
-            pos = v1-v4 * t_mod + v4
+            pos = (v1-v4) * (t_mod -1/2) + v4
     
         return np.array(pos)
 
@@ -253,8 +254,7 @@ class InverseKinematics(Node):
             target_joint_positions_cache.append([])
             target_ee_cache.append([])
             target_joint_positions = [0] * 3
-            for t in np.arange(0, 1, 0.02):
-                print(t)
+            for t in np.arange(0, 5/6, 0.02):
                 target_ee = self.interpolate_triangle(t, leg_index)
                 target_joint_positions = self.inverse_kinematics_single_leg(target_ee, leg_index, initial_guess=target_joint_positions)
 
@@ -281,11 +281,12 @@ class InverseKinematics(Node):
             current_ee = self.forward_kinematics(self.joint_positions)
 
             self.get_logger().info(
-                f'Target EE: {target_ee}, \
-                Current EE: {current_ee}, \
-                Target Angles: {self.target_joint_positions}, \
-                Target Angles to EE: {self.forward_kinematics(self.target_joint_positions)}, \
-                Current Angles: {self.joint_positions}')
+                f' ')
+                #Target EE: {target_ee}, \
+                #Current EE: {current_ee}, \
+                #Target Angles: {self.target_joint_positions}, \
+                #Target Angles to EE: {self.forward_kinematics(self.target_joint_positions)}, \
+                #Current Angles: {self.joint_positions}')
 
     def pd_timer_callback(self):
         if self.target_joint_positions is not None:
