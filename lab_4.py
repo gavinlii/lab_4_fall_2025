@@ -6,28 +6,48 @@ import numpy as np
 np.set_printoptions(precision=3, suppress=True)
 
 def rotation_x(angle):
-    ################################################################################################
-    # TODO: [already done] paste lab 2 forward kinematics here
-    ################################################################################################
-    return
+    # rotation about the x-axis implemented for you
+    return np.array(
+        [
+            [1, 0, 0, 0],
+            [0, np.cos(angle), -np.sin(angle), 0],
+            [0, np.sin(angle), np.cos(angle), 0],
+            [0, 0, 0, 1],
+        ]
+    )
 
 def rotation_y(angle):
-    ################################################################################################
-    # TODO: [already done] paste lab 2 forward kinematics here
-    ################################################################################################
-    return
+    ## TODO: Implement the rotation matrix about the y-axis
+    return np.array(
+        [
+            [np.cos(angle), 0, np.sin(angle), 0],
+            [0, 1, 0, 0],
+            [-np.sin(angle), 0, np.cos(angle), 0],
+            [0, 0, 0, 1],
+        ]
+    )
 
 def rotation_z(angle):
-    ################################################################################################
-    # TODO: [already done] paste lab 2 forward kinematics here
-    ################################################################################################
-    return
+    ## TODO: Implement the rotation matrix about the z-axis
+    return np.array(
+        [
+            [np.cos(angle), -np.sin(angle), 0, 0],
+            [np.sin(angle), np.cos(angle), 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1],
+        ]
+    )
 
 def translation(x, y, z):
-    ################################################################################################
-    # TODO: [already done] paste lab 2 forward kinematics here
-    ################################################################################################
-    return
+    ## TODO: Implement the translation matrix
+    return np.array(
+        [
+            [1, 0, 0, x],
+            [0, 1, 0, y],
+            [0, 0, 1, z],
+            [0, 0, 0, 1],
+        ]
+    )
 
 class InverseKinematics(Node):
 
@@ -114,22 +134,37 @@ class InverseKinematics(Node):
         return T_RF_0_ee[:3, 3]
 
     def fl_leg_fk(self, theta):
-        ################################################################################################
-        # TODO: implement forward kinematics here
-        ################################################################################################
-        return
+        # T_0_1 (base_link to leg_front_l_1)
+        theta1, theta2, theta3 = theta
+        T_0_1 = translation(0.07500, -0.0445, 0) @ rotation_x(1.57080) @ rotation_z(theta1)
+        T_1_2 = translation(0, 0, 0.039) @ rotation_y(-1.57080) @ rotation_z(theta2)
+        T_2_3 = translation(0, -0.0494, 0.0685) @ rotation_y(1.57080) @ rotation_z(theta3)
+        T_3_ee = translation(0.06231, -0.06216, 0.018) 
+        T_0_ee = T_0_1 @ T_1_2 @ T_2_3 @ T_3_ee
+        return T_0_ee[:3,3]
 
     def br_leg_fk(self, theta):
         ################################################################################################
         # TODO: implement forward kinematics here
         ################################################################################################
-        return
+        T_RF_0_1 = translation(-0.07500, -0.08350, 0) @ rotation_x(-1.57080) @ rotation_z(theta[0])
+        T_RF_1_2 = rotation_y(-1.57080) @ rotation_z(theta[1])
+        T_RF_2_3 = translation(0, -0.04940, 0.06850) @ rotation_y(1.57080) @ rotation_z(theta[2])
+        T_RF_3_ee = translation(0.06231, -0.06216, 0.01800)
+        T_RF_0_ee = T_RF_0_1 @ T_RF_1_2 @ T_RF_2_3 @ T_RF_3_ee
+        return T_RF_0_ee[:3, 3]
 
     def bl_leg_fk(self, theta):
         ################################################################################################
         # TODO: implement forward kinematics here
         ################################################################################################
-        return
+        theta1, theta2, theta3 = theta
+        T_0_1 = translation(0.07500, 0.0445, 0) @ rotation_x(1.57080) @ rotation_z(theta1)
+        T_1_2 = translation(0, 0, 0.039) @ rotation_y(-1.57080) @ rotation_z(theta2)
+        T_2_3 = translation(0, -0.0494, 0.0685) @ rotation_y(1.57080) @ rotation_z(theta3)
+        T_3_ee = translation(0.06231, -0.06216, 0.018) 
+        T_0_ee = T_0_1 @ T_1_2 @ T_2_3 @ T_3_ee
+        return T_0_ee[:3,3]
 
     def forward_kinematics(self, theta):
         return np.concatenate([self.fk_functions[i](theta[3*i: 3*i+3]) for i in range(4)])
