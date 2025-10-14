@@ -86,6 +86,7 @@ class InverseKinematics(Node):
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
+            liftoff_position, mid_swing_position, touch_down_position, stand_position_2
         ]) + rf_ee_offset
         
         lf_ee_offset = np.array([0.06, 0.09, 0])
@@ -93,6 +94,7 @@ class InverseKinematics(Node):
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
+            liftoff_position, mid_swing_position, touch_down_position, stand_position_2
         ]) + lf_ee_offset
         
         rb_ee_offset = np.array([-0.11, -0.09, 0])
@@ -100,6 +102,7 @@ class InverseKinematics(Node):
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
+            liftoff_position, mid_swing_position, touch_down_position, stand_position_2
         ]) + rb_ee_offset
         
         lb_ee_offset = np.array([-0.11, 0.09, 0])
@@ -107,6 +110,7 @@ class InverseKinematics(Node):
             ################################################################################################
             # TODO: Implement the trotting gait
             ################################################################################################
+            liftoff_position, mid_swing_position, touch_down_position, stand_position_2
         ]) + lb_ee_offset
 
 
@@ -187,26 +191,40 @@ class InverseKinematics(Node):
             ################################################################################################
             # TODO: [already done] paste lab 3 inverse kinematics here
             ################################################################################################
-            return None, None
+            cost = np.linalg.norm(target_ee-current_position)
+            return cost **2
 
         def gradient(theta, epsilon=1e-3):
             grad = np.zeros(3)
             ################################################################################################
             # TODO: [already done] paste lab 3 inverse kinematics here
             ################################################################################################
+            for i in range(len(theta)):
+                theta_plus = theta.copy()
+                theta_minus = theta.copy()
+                theta_plus[i] += epsilon
+                theta_minus[i] -= epsilon
+
+                cost_plus = cost_function(theta_plus)
+                cost_minus = cost_function(theta_minus)
+
+                grad[i] = (cost_plus - cost_minus) / (2 * epsilon)
             return grad
 
         theta = np.array(initial_guess)
-        learning_rate = None # TODO:[already done] paste lab 3 inverse kinematics here
-        max_iterations = None # TODO: [already done] paste lab 3 inverse kinematics here
-        tolerance = None # TODO: [already done] paste lab 3 inverse kinematics here
+        learning_rate = 10 # TODO:[already done] paste lab 3 inverse kinematics here
+        max_iterations = 20 # TODO: [already done] paste lab 3 inverse kinematics here
+        tolerance = 0.0002 # TODO: [already done] paste lab 3 inverse kinematics here
 
         cost_l = []
         for _ in range(max_iterations):
             ################################################################################################
             # TODO: [already done] paste lab 3 inverse kinematics here
             ################################################################################################
-            continue
+            grad = gradient(theta)
+            if np.sum(np.abs(target_ee-theta)) < tolerance:
+                break
+            theta = theta - learning_rate * grad
 
         return theta
 
