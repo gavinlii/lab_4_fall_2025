@@ -73,21 +73,21 @@ class InverseKinematics(Node):
 
         '''
         # Trotting gait positions: TROT, SLOW
-        touch_down_position = np.array([0.05, 0.0, -0.14])
+        touch_down_position = np.array([0.04, 0.0, -0.14])
         stand_position_1 = np.array([0.025, 0.0, -0.14])
         stand_position_2 = np.array([0.0, 0.0, -0.14])
         stand_position_3 = np.array([-0.025, 0.0, -0.14])
-        liftoff_position = np.array([-0.05, 0.0, -0.14])
+        liftoff_position = np.array([-0.04, 0.0, -0.14])
         mid_swing_position = np.array([0.0, 0.0, -0.05])
         '''
 
         
         # Trotting gait positions: TROT, FAST
-        touch_down_position = np.array([0.1, 0.0, -0.14])
+        touch_down_position = np.array([0.08, 0.0, -0.14])
         stand_position_1 = np.array([0.025, 0.0, -0.14])
         stand_position_2 = np.array([0.0, 0.0, -0.14])
         stand_position_3 = np.array([-0.025, 0.0, -0.14])
-        liftoff_position = np.array([-0.05, 0.0, -0.14])
+        liftoff_position = np.array([-0.08, 0.0, -0.14])
         mid_swing_position = np.array([0.0, 0.0, -0.05])
         
         
@@ -250,11 +250,11 @@ class InverseKinematics(Node):
         if (t_mod < 5/24):
             pos = (v2-v1)* t_mod + v1
         elif (t_mod < 10/24):
-            pos = (v3-v2)* (t_mod -1/6) + v2
+            pos = (v3-v2)* (t_mod -7/24) + v2
         elif (t_mod < 15/24):
-            pos = (v4-v3) * (t_mod - 1/3) + v3
+            pos = (v4-v3) * (t_mod - 13/24) + v3
         else:
-            pos = (v1-v4) * (t_mod -1/2) + v4
+            pos = (v1-v4) * (t_mod -19/24) + v4
     
         return np.array(pos)
 
