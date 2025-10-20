@@ -71,13 +71,25 @@ class InverseKinematics(Node):
         self.target_joint_positions = None
         self.counter = 0
 
-        # Trotting gate positions, already implemented
+        '''
+        # Trotting gait positions: TROT, SLOW
         touch_down_position = np.array([0.05, 0.0, -0.14])
         stand_position_1 = np.array([0.025, 0.0, -0.14])
         stand_position_2 = np.array([0.0, 0.0, -0.14])
         stand_position_3 = np.array([-0.025, 0.0, -0.14])
         liftoff_position = np.array([-0.05, 0.0, -0.14])
         mid_swing_position = np.array([0.0, 0.0, -0.05])
+        '''
+
+        
+        # Trotting gait positions: TROT, FAST
+        touch_down_position = np.array([0.1, 0.0, -0.14])
+        stand_position_1 = np.array([0.025, 0.0, -0.14])
+        stand_position_2 = np.array([0.0, 0.0, -0.14])
+        stand_position_3 = np.array([-0.025, 0.0, -0.14])
+        liftoff_position = np.array([-0.05, 0.0, -0.14])
+        mid_swing_position = np.array([0.0, 0.0, -0.05])
+        
         
         ## trotting
         # TODO: Implement each leg’s trajectory in the trotting gait.
